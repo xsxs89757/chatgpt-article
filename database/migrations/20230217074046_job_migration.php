@@ -43,15 +43,6 @@ final class JobMigration extends AbstractMigration
             ->addTimestamps()
             ->create();
 
-        $timing = $this->table('timing');
-        $timing->addColumn('name', 'string', ['comment' => '定时任务名称'])
-            ->addColumn('word_id', 'integer', ['signed' => false, 'comment' =>'词库任务id'])
-            ->addColumn('post_url', 'string', [ 'comment' =>'发布的url'])
-            ->addColumn('day_start', 'integer', ['default' => 0, 'limit' => MysqlAdapter::INT_TINY, 'comment' => '开始时间'])
-            ->addColumn('day_end', 'integer', ['default' => 0, 'limit' => MysqlAdapter::INT_TINY, 'comment' => '结束时间'])
-            ->addColumn('field_data','string', ['comment' => '传递的字段'])
-            ->addColumn('push_count','integer', ['comment' => '每次发送的数量'])
-            ->addTimestamps()
-            ->create();
+        
     }
 }
