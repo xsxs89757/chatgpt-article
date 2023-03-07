@@ -61,10 +61,11 @@ class Article implements Consumer
 
         $data = [
             'title' => $title,
-            'content' => str_replace($title, '', $content),
+            // 'content' => str_replace($title, '', $content),
             // 'keywords' => $keyword,
             // 'description' => $description,
             // 'tags' => $tags,
+            'content' => $content,
             'keywords' => '',
             'description' => '',
             'tags' => '',
