@@ -10,6 +10,7 @@ use Workerman\Crontab\Crontab;
 use Carbon\Carbon;
 use Error;
 use GuzzleHttp\Client;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Task
 {
@@ -30,9 +31,16 @@ class Task
                         $result->status = Word::OVER;
                         $result->save();
                     }
+                    if (!Redis::exists('{redis-queue}-waiting'.Article::ARTICLE_QUEUE) && 
+                    !Redis::exists('{redis-queue}-delayed')){
+                        $result->status = Word::OVER;
+                        $result->save();
+                    }
                 }
+            }catch(ModelNotFoundException){
+
             }catch(\Throwable $e){
-                var_dump($e->getMessage());
+                var_dump('Pross:'.$e->getMessage());
             }
         });
 

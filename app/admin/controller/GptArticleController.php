@@ -17,7 +17,7 @@ class GptArticleController extends BaseController
     {
         $params = $this->getPageParams($request);
         $list = ModelArticle::with('task:id,name')
-        ->select(['id', 'title', 'word', 'word_id', 'created_at'])
+        // ->select(['id', 'title', 'word', 'word_id', 'created_at'])
         ->orderBy('id', 'desc')
         ->paginate($params['limit'], ['*'], 'page', $params['page']);
         return $this->page($list);
