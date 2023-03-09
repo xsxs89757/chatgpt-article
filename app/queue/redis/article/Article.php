@@ -19,7 +19,7 @@ class Article implements Consumer
     public function consume($data)
     {   
         $title = ltrim($data['title']);
-        $resultContent = ChatgptHttp::getMessage('article', '请根据 '.$title. ' 这个标题,生成一篇文章', $data['index']);
+        $resultContent = ChatgptHttp::getMessage('article', '请根据 '.$title. ' 这个标题,生成一篇不少于1000字的文章,内容中不要带标题', $data['index']);
         $content = $resultContent['content'];
         $index = $resultContent['index'];
         $parent_message_id = $resultContent['parent_message_id'];
