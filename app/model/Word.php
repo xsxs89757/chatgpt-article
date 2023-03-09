@@ -173,7 +173,7 @@ class Word extends BaseModel {
     {
         try {
             $word = self::findOrFail($id);
-            if($word->status === self::STOP || $word->status === self::PUSH_OVER){
+            if($word->status === self::STOP || $word->status === self::START_ERROR || $word->status === self::PUSH_OVER){
                 $word->delete();
             }else{
                 throw new AsErrorException('只能删除停止和发布完成状态下的任务');
