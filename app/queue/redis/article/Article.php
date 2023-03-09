@@ -20,6 +20,9 @@ class Article implements Consumer
     {   
         $title = ltrim($data['title']);
         $resultContent = ChatgptHttp::getMessage('article', '请根据 '.$title. ' 这个标题,生成一篇不少于1000字的文章,内容中不要带标题', $data['index']);
+        if(!isset($resultContent['content'])){
+            var_dump($resultContent);
+        }
         $content = $resultContent['content'];
         $index = $resultContent['index'];
         $parent_message_id = $resultContent['parent_message_id'];
