@@ -129,7 +129,9 @@ class Task
                                 ],
                                 'timeout'     => 3
                             ]);
-                            Article::destroy($ids);
+                            if($item->is_test === Timing::START_TEST){
+                                Article::destroy($ids);
+                            }
                         } catch (\Throwable $e) {
                             throw new Error($e->getMessage());
                         }

@@ -26,6 +26,7 @@ final class TimingMigration extends AbstractMigration
             ->addColumn('day_start', 'integer', ['default' => 0, 'limit' => MysqlAdapter::INT_TINY, 'comment' => '开始时间'])
             ->addColumn('day_end', 'integer', ['default' => 0, 'limit' => MysqlAdapter::INT_TINY, 'comment' => '结束时间'])
             ->addColumn('push_count','integer', ['comment' => '每次发送的数量'])
+            ->addColumn('is_test', 'integer', ['default' => 0, 'limit' => MysqlAdapter::INT_TINY, 'comment' => '是否测试 0 测试 1 不测试'])
             ->addColumn('status', 'integer', ['default' => 0, 'limit' => MysqlAdapter::INT_TINY, 'comment' => '状态 0 停止 1 开始 2 完成'])
             ->addTimestamps()
             ->create();

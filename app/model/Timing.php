@@ -10,6 +10,9 @@ class Timing extends BaseModel{
     const TIMING_STOP = 0;
     const TIMING_OVER = 2;
 
+    const START_TEST = 0;
+    const STOP_TEST = 1;
+
     protected $appends = ['time_picker'];
     
      /**
