@@ -6,7 +6,7 @@ use support\Request;
 use support\Response;
 
 class TimingController extends BaseController{
-    
+
     /**
      *  列表
      *
@@ -66,6 +66,7 @@ class TimingController extends BaseController{
     public function start(Request $request,int $id) : Response
     {
         ModelTiming::start($id);
+
         return $this->success();
     }
 
@@ -109,7 +110,9 @@ class TimingController extends BaseController{
             'post_url' => ['required|url|max:198', '接收数据url'],
             'time_picker' => ['required|array', '时间'],
             'push_count' => ['required|integer|max:100', '每次发布的文章数量'],
-            'is_test' => ['required|integer', '是否是测试']
+            'push_time' => ['required|integer|min:1', '发布时间'],
+            'push_unit' => ['required|integer', '发布时间限制'],
+            'is_test' => ['required|integer', '是否是测试'],
         ]);
         list($data['day_start'], $data['day_end']) = array_map('intval', $data['time_picker']);
         unset($data['time_picker']);

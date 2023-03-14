@@ -1,15 +1,14 @@
 <?php
 namespace process;
 
-use App\model\Article;
+use Error;
+use Carbon\Carbon;
 use app\model\Word;
 use Workerman\Timer;
 use App\model\Timing;
-use Webman\RedisQueue\Redis;
-use Workerman\Crontab\Crontab;
-use Carbon\Carbon;
-use Error;
+use App\model\Article;
 use GuzzleHttp\Client;
+use Webman\RedisQueue\Redis;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Task
@@ -46,7 +45,7 @@ class Task
 
         
         // 每10秒执行一次
-        new Crontab('*/10 * * * * *', function(){
+        Timer::add(1, function(){
             try{
                 $this->sendArticle();
             }catch(\Throwable $e){
@@ -112,6 +111,17 @@ class Task
         if($result){
             $result->map(function ($item) {
                 $current = Carbon::now();
+                $unit = 1;
+                if($item->push_unit === 1){
+                    $unit = 60;
+                }elseif ($item->push_unit === 2){
+                    $unit = 60 * 60;
+                }
+                $pushTime = $item->push_time * $unit;
+                if($item->before_time + $pushTime >= time() && $item->before_time !== 0){
+                    return ;
+                }
+
                 if($current->hour >= $item->day_start && $current->hour < $item->day_end){
                     $articleResult = Article::where('word_id', $item->word_id)
                                         ->limit($item->push_count)
@@ -129,7 +139,9 @@ class Task
                                 ],
                                 'timeout'     => 3
                             ]);
-                            if($item->is_test === Timing::START_TEST){
+                            $item->before_time = time();
+                            $item->save();
+                            if($item->is_test === Timing::STOP_TEST){
                                 Article::destroy($ids);
                             }
                         } catch (\Throwable $e) {
