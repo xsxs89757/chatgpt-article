@@ -30,8 +30,10 @@ class Task
                         $result->status = Word::OVER;
                         $result->save();
                     }
-                    if (!Redis::exists('{redis-queue}-waiting'.Article::ARTICLE_QUEUE) && 
-                    !Redis::exists('{redis-queue}-delayed')){
+                    if ($result->progress > 0 && 
+                        !Redis::exists('{redis-queue}-waiting'.Article::ARTICLE_QUEUE) && 
+                        !Redis::exists('{redis-queue}-delayed')
+                    ){
                         $result->status = Word::OVER;
                         $result->save();
                     }
