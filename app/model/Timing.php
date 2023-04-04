@@ -1,6 +1,7 @@
 <?php
 namespace App\model;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Timing extends BaseModel{
@@ -13,7 +14,7 @@ class Timing extends BaseModel{
     const START_TEST = 0;
     const STOP_TEST = 1;
 
-    protected $appends = ['time_picker'];
+    protected $appends = [ 'time_picker', 'count_articles'];
     
      /**
      * @param \DateTimeInterface $date
@@ -21,6 +22,26 @@ class Timing extends BaseModel{
      */
     protected function serializeDate(\DateTimeInterface $date): string {
         return $date->format($this->dateFormat ?: 'Y-m-d H:i:s');
+    }
+
+    /**
+     * 对应的article数量
+     *
+     * @return HasMany
+     */
+    public function articles() :HasMany
+    {
+        return $this->hasMany(Article::class, 'word_id', 'word_id');
+    }
+
+    /**
+     * 可发布文章数量
+     *
+     * @return int
+     */
+    public function getCountArticlesAttribute(): int
+    {
+        return $this->articles()->count();
     }
 
 

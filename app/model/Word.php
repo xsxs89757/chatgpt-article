@@ -16,8 +16,11 @@ class Word extends BaseModel {
     const PUSH_OVER = 6;
 
     const WORD_QUEUE = 'word_queue';
+    const WORD_PROMPT_QUEUE = 'word_prompt_queue';
 
     const ONE_WORD_TO_ARTICLE_COUNT = 10;
+
+    const REPLACE_STR = '#标题#';
     protected $table = 'word';
 
     /**
@@ -126,7 +129,13 @@ class Word extends BaseModel {
     public static function progress(int $id) :void
     {
         try {
+            
             self::where('id',$id)->increment('progress');
+            $word = self::findOrFail($id);
+            if($word->progress === $word->count_article){
+                $word->status = self::OVER;
+                $word->save();
+            }
         }catch (\Throwable $e) {
             self::handleError($e);
         }

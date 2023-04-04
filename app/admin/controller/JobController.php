@@ -17,10 +17,12 @@ class JobController extends BaseController{
     public function create(Request $request): Response
     {
         $name = $request->input('name');
-        $filename = $request->input('filename');    
+        $filename = $request->input('filename'); 
+        $word = $request->input('word');   
         $data = [
             'name' => $name,
             'filename' => $filename,
+            'word' => $word
         ];
         Word::store($data);
         return $this->success();
@@ -100,9 +102,9 @@ class JobController extends BaseController{
      */
     public function stop(Request $request, int $id): Response
     {
-        // Word::stop($id);
-        // Redis::del('{redis-queue}-waiting'.Word::WORD_QUEUE);
-        return $this->error('暂时还无法停止任务');
+        Word::stop($id);
+        Redis::del('{redis-queue}-waiting'.Word::WORD_PROMPT_QUEUE);
+        return $this->success();
     }
 }
 

@@ -31,7 +31,7 @@ class Task
                         $result->save();
                     }
                     if ($result->progress > 0 && 
-                        !Redis::exists('{redis-queue}-waiting'.Article::ARTICLE_QUEUE) && 
+                        !Redis::exists('{redis-queue}-waiting'.Word::WORD_PROMPT_QUEUE) && 
                         !Redis::exists('{redis-queue}-delayed')
                     ){
                         $result->status = Word::OVER;
@@ -61,45 +61,81 @@ class Task
      *
      * @return void
      */
+    // private function patrolTask(): void
+    // {
+    //     $result = Word::where('status', Word::STARTING)->first();
+    //         try{
+    //             if($result){
+    //                 Word::startTask($result->id);
+    //                 $localFileName = public_path() . '/' . $result->filename;
+    //                 $word = [];
+    //                 $handle = fopen($localFileName, 'r');
+    //                 while (($data = fgetcsv($handle)) !== false) {
+    //                     $data[0] = convertStr($data[0]);
+    //                     if ($data[0] == '关键词') {
+    //                         continue;
+    //                     }
+    //                     $word[] = $data[0];
+    //                 }
+    //                 $data = [
+    //                     'count_word' => count($word),
+    //                     'count_article' => Word::ONE_WORD_TO_ARTICLE_COUNT * count($word),
+    //                     'status' => Word::START
+    //                 ];
+    //                 $api = config('app.chatgpt_cluster_title');
+    //                 $index = 0;
+    //                 foreach($word as $w){
+    //                     $index = ($index + 1) % count($api);
+    //                     $redisData = [
+    //                         'index' => $index, 
+    //                         'task_id' => $result->id,
+    //                         'word' => $w
+    //                     ];
+    //                     Redis::send(Word::WORD_QUEUE, $redisData);
+    //                 }
+    //                 Word::store($data, $result->id);
+    //             }
+                
+    //         }catch(\Throwable $e){
+    //             var_dump($e->getMessage());
+    //             Word::startError($result->id);
+    //         }
+    // }
+
     private function patrolTask(): void
     {
         $result = Word::where('status', Word::STARTING)->first();
-            try{
-                if($result){
-                    Word::startTask($result->id);
-                    $localFileName = public_path() . '/' . $result->filename;
-                    $word = [];
-                    $handle = fopen($localFileName, 'r');
-                    while (($data = fgetcsv($handle)) !== false) {
-                        $data[0] = convertStr($data[0]);
-                        if ($data[0] == '关键词') {
-                            continue;
-                        }
-                        $word[] = $data[0];
-                    }
-                    $data = [
-                        'count_word' => count($word),
-                        'count_article' => Word::ONE_WORD_TO_ARTICLE_COUNT * count($word),
-                        'status' => Word::START
-                    ];
-                    $api = config('app.chatgpt_cluster_title');
-                    $index = 0;
-                    foreach($word as $w){
-                        $index = ($index + 1) % count($api);
-                        $redisData = [
-                            'index' => $index, 
-                            'task_id' => $result->id,
-                            'word' => $w
-                        ];
-                        Redis::send(Word::WORD_QUEUE, $redisData);
-                    }
-                    Word::store($data, $result->id);
+        try{
+            if($result){
+                Word::startTask($result->id);
+                $localFileName = public_path() . '/' . $result->filename;
+                $word = [];
+                $handle = fopen($localFileName, 'r');
+                while(! feof($handle)){
+                    $order=["\r\n","\n","\r"];
+                    $replace='';
+                    $word[] = str_replace($order, $replace, fgets($handle));
                 }
-                
-            }catch(\Throwable $e){
-                var_dump($e->getMessage());
-                Word::startError($result->id);
+                fclose($handle);
+                $data = [
+                    'count_word' => count($word),
+                    'count_article' => count($word),
+                    'status' => Word::START
+                ];
+                foreach(array_slice($word ,$result->progress) as $w){
+                    $redisData = [
+                        'task_id' => $result->id,
+                        'word' => str_replace(Word::REPLACE_STR, $w,$result->word),
+                        'y_word' => $w
+                    ];
+                    Redis::send(Word::WORD_PROMPT_QUEUE, $redisData);
+                }
+                Word::store($data, $result->id);
             }
+        }catch(\Throwable $e){
+            var_dump($e->getMessage());
+            Word::startError($result->id);
+        }
     }
 
     /**
@@ -129,7 +165,6 @@ class Task
                                         ->limit($item->push_count)
                                         ->orderBy('id', 'desc')
                                         ->get();
-                    
                     if(!$articleResult->isEmpty()){
                         $ids = $articleResult->pluck('id')->all();
                         try {
