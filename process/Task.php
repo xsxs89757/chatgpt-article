@@ -10,6 +10,7 @@ use App\model\Article;
 use GuzzleHttp\Client;
 use Webman\RedisQueue\Redis;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use support\Log;
 
 class Task
 {
@@ -182,6 +183,7 @@ class Task
                                 Article::destroy($ids);
                             }
                         } catch (\Throwable $e) {
+                            Log::debug('ERROR: ' . $e->getMessage());
                             throw new Error($e->getMessage());
                         }
                     }else{
