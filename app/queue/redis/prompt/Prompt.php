@@ -28,7 +28,7 @@ class Prompt implements Consumer
                 $parent_message_id
             );
             $tdk = explode(PHP_EOL, $resultTags['content']);
-            $keyword = $description = $tags = "";
+            $title = $keyword = $description = $tags = "";
             foreach($tdk as $value) {
                 if($value){
                     $tdkArr = explode(':', $value);
