@@ -21,12 +21,18 @@ class Prompt implements Consumer
     {   
         try{
             $resultContent = CgptHttp::getMessage($data['word']);
+            if(!isset($resultContent['content'])){
+                Log::debug('RESULT_ERROR:', $resultContent);
+            }
             $content = $resultContent['content'];
             $parent_message_id = $resultContent['parent_message_id'];
             $resultTags = CgptHttp::getMessage(
                 '根据上面生成的文章生成title并提取keywords、description、tags', 
                 $parent_message_id
             );
+            if(!isset($resultTags['content'])){
+                Log::debug('RESULT_TAGS_ERROR:', $resultTags);
+            }
             $tdk = explode(PHP_EOL, $resultTags['content']);
             $title = $keyword = $description = $tags = "";
             foreach($tdk as $value) {
