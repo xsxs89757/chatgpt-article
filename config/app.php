@@ -30,7 +30,7 @@ return [
     'chatgpt_cluster_article' =>[
         'http://43.153.18.225:8792/chatgpt'
     ],
-    'chatgpt_cluster' => 'http://43.153.18.225:5678/chatgpt'
+    'chatgpt_cluster' => 'http://43.153.18.225:5678/api/chat_qf'
     // 'chatgpt_cluster_title' => [
     //     'http://43.153.90.245:8788/chatgpt',
     //     'http://43.153.23.119:8788/chatgpt',
