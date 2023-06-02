@@ -175,7 +175,7 @@ class Task
                                     'status'    => 0,
                                     'data'      => $articleResult->toArray()
                                 ],
-                                'timeout'     => 3
+                                'timeout'     => 5
                             ]);
                             $item->before_time = time();
                             $item->save();

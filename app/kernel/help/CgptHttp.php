@@ -1,6 +1,7 @@
 <?php
 namespace app\kernel\help;
 
+use Exception;
 use GuzzleHttp\Client;
 
 class CgptHttp
@@ -32,6 +33,11 @@ class CgptHttp
         ]);
         
         $body   = json_decode((string) $response->getBody(), true);
-        return $body;
+        if($body['code'] === 0){
+            return $body['data'];
+        }else{
+            throw new Exception($body['message']);
+        }
+
     }
 }
